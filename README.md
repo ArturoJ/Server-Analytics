@@ -14,8 +14,8 @@ Dashboard modular con widgets personalizables (drag-and-drop), estadisticas por 
 ## Instalacion rapida
 
 ```bash
-git clone https://github.com/tu-usuario/server-analytics.git
-cd server-analytics
+git clone https://github.com/ArturoJ/Server-Analytics.git
+cd Server-Analytics
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
@@ -57,7 +57,7 @@ python -c "from django.core.management.utils import get_random_secret_key; print
 En un servidor Ubuntu 24.04 limpio, como root:
 
 ```bash
-curl -O https://raw.githubusercontent.com/tu-usuario/server-analytics/main/deploy/install.py
+curl -O https://raw.githubusercontent.com/ArturoJ/Server-Analytics/main/deploy/install.py
 sudo python3 install.py
 ```
 
