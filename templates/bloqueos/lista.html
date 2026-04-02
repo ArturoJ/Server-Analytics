@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Bloqueos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h1>Registro de Bloqueos</h1><p id="totalInfo">Cargando...</p></div>
+  <button class="btn btn-gold" id="btnExport">⬇ Exportar CSV</button>
+</div>
+
+<div class="table-box">
+  <div class="table-header">
+    <div class="filters" id="filtrosTipo">
+      <button class="filter-btn active" data-filter="all">Todos <span class="filter-count" id="cAll">—</span></button>
+      <button class="filter-btn" data-filter="escaneo">Escaneo <span class="filter-count" id="cEsc">—</span></button>
+      <button class="filter-btn" data-filter="exceso">Exceso <span class="filter-count" id="cExc">—</span></button>
+      <button class="filter-btn" data-filter="high">+50 pet. <span class="filter-count" id="cHigh">—</span></button>
+    </div>
+    <div class="filters" id="filtrosPais"></div>
+  </div>
+  <div class="table-scroll">
+    <table>
+      <thead><tr><th>Fecha</th><th>Hora</th><th>IP</th><th>País</th><th>Motivo</th><th>Peticiones</th><th>Regla</th><th>Estado</th></tr></thead>
+      <tbody id="bloqueosBody"></tbody>
+    </table>
+  </div>
+  <div class="table-footer">
+    <span class="table-footer-info" id="paginaInfo">—</span>
+    <div class="pagination" id="paginacion"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script nonce="{{CSP_NONCE}}">
+var filtroTipo = 'all', filtroPais = '', pagina = 1;
+function cFlag(c){if(!c||c.length!==2)return '';return String.fromCodePoint(0x1F1E6+c.charCodeAt(0)-65)+String.fromCodePoint(0x1F1E6+c.charCodeAt(1)-65)}
+function fmtN(n){var s=String(Math.round(Number(n)||0));var r='';for(var i=s.length-1,c=0;i>=0;i--,c++){if(c>0&&c%3===0)r='.'+r;r=s[i]+r}return r}
+function esc(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+fetch('/api/bloqueos/?page=1').then(r=>r.json()).then(function(d){document.getElementById('cAll').textContent=fmtN(d.total)});
+fetch('/api/bloqueos/?motivo=escaneo&page=1').then(r=>r.json()).then(function(d){document.getElementById('cEsc').textContent=fmtN(d.total)});
+fetch('/api/bloqueos/?motivo=exceso&page=1').then(r=>r.json()).then(function(d){document.getElementById('cExc').textContent=fmtN(d.total)});
+fetch('/api/bloqueos/?min_pet=50&page=1').then(r=>r.json()).then(function(d){document.getElementById('cHigh').textContent=fmtN(d.total)});
+
+fetch('/api/estadisticas/paises/').then(r=>r.json()).then(function(data) {
+  var container = document.getElementById('filtrosPais');
+  data.ranking.forEach(function(p) {
+    if (!p.codigo) return;
+    var btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.pais = p.codigo;
+    btn.textContent = p.bandera + ' ' + p.pais;
+    btn.onclick = function() {
+      if (filtroPais === this.dataset.pais) { filtroPais = ''; this.classList.remove('active'); }
+      else { container.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); }); filtroPais = this.dataset.pais; this.classList.add('active'); }
+      pagina = 1; loadBloqueos();
+    };
+    container.appendChild(btn);
+  });
+});
+
+function loadBloqueos() {
+  var params = '?page=' + pagina;
+  if (filtroTipo === 'high') params += '&min_pet=50';
+  else if (filtroTipo !== 'all') params += '&motivo=' + filtroTipo;
+  if (filtroPais) params += '&pais=' + filtroPais;
+
+  fetch('/api/bloqueos/' + params).then(r => r.json()).then(data => {
+    var tbody = document.getElementById('bloqueosBody');
+    tbody.innerHTML = data.items.map(function(b) {
+      var sev = b.peticiones >= 50 ? ' tag-red' : b.peticiones >= 25 ? ' tag-gold' : '';
+      var tc = b.motivo === 'exceso' ? 'tag-red' : 'tag-gold';
+      return '<tr><td class="td-date">' + esc(b.fecha) + '</td><td class="td-time">' + esc(b.hora) + '</td><td><a href="/bloqueos/' + esc(b.ip) + '/" class="ip">' + esc(b.ip) + '</a></td><td><span class="flag">' + cFlag(b.codigo_pais) + '</span><span class="country">' + esc(b.pais) + '</span></td><td><span class="tag ' + tc + '">' + esc(b.motivo_display) + '</span></td><td><span class="tag' + sev + '">' + fmtN(b.peticiones) + '</span></td><td class="td-regla">' + esc(b.regla) + '</td><td class="td-status">● Bloqueada</td></tr>';
+    }).join('');
+
+    document.getElementById('totalInfo').textContent = data.total + ' bloqueos';
+    document.getElementById('paginaInfo').textContent = 'Página ' + data.page + ' de ' + data.total_pages;
+
+    var pag = document.getElementById('paginacion');
+    pag.innerHTML = '';
+    for (var i = 1; i <= data.total_pages; i++) {
+      var btn = document.createElement('button');
+      btn.textContent = i;
+      if (i === data.page) btn.classList.add('active');
+      btn.dataset.page = i;
+      btn.onclick = function() { pagina = parseInt(this.dataset.page); loadBloqueos(); };
+      pag.appendChild(btn);
+    }
+  });
+}
+
+document.querySelectorAll('#filtrosTipo .filter-btn').forEach(function(btn) {
+  btn.onclick = function() {
+    document.querySelectorAll('#filtrosTipo .filter-btn').forEach(function(b) { b.classList.remove('active'); });
+    this.classList.add('active');
+    filtroTipo = this.dataset.filter;
+    pagina = 1; loadBloqueos();
+  };
+});
+
+
+document.getElementById('btnExport').onclick = function() {
+  var params = '?formato=csv';
+  if (filtroTipo !== 'all') params += '&motivo=' + filtroTipo;
+  if (filtroPais) params += '&pais=' + filtroPais;
+  window.location.href = '/api/bloqueos/' + params;
+};
+
+loadBloqueos();
+</script>
+{% endblock %}

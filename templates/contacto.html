@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Contacto{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Contacto</h1>
+    <p>Esta seccion no esta disponible actualmente</p>
+  </div>
+  <a href="{% url 'dashboard' %}" class="btn">← Volver al dashboard</a>
+</div>
+
+<form method="post" action="/contacto/" class="hp-form" tabindex="-1" aria-hidden="true" autocomplete="off">
+  {% csrf_token %}
+  <label for="hp-name">Nombre</label>
+  <input type="text" name="name" id="hp-name" autocomplete="off">
+  <label for="hp-email">Email</label>
+  <input type="email" name="email" id="hp-email" autocomplete="off">
+  <label for="hp-message">Mensaje</label>
+  <textarea name="message" id="hp-message"></textarea>
+  <button type="submit">Enviar</button>
+</form>
+{% endblock %}

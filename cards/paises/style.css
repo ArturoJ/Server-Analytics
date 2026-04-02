@@ -1,0 +1,37 @@
+[data-card-module="paises"] .card-body { padding: 0; display: flex; flex-direction: column; }
+[data-card-module="paises"] .pa-kpis {
+    display: flex; gap: 0; border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+[data-card-module="paises"] .pa-kpi {
+    flex: 1; text-align: center; padding: 8px 6px; border-right: 1px solid var(--border);
+}
+[data-card-module="paises"] .pa-kpi:last-child { border-right: none; }
+[data-card-module="paises"] .pa-kpi-val {
+    display: block; font-family: 'JetBrains Mono', monospace; font-size: 1.1rem;
+    font-weight: 700; color: var(--gold);
+}
+[data-card-module="paises"] .pa-kpi-lbl {
+    display: block; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-dim); margin-top: 2px;
+}
+[data-card-module="paises"] .pa-scroll { flex: 1; overflow-y: auto; }
+[data-card-module="paises"] .pa-table { width: 100%; border-collapse: collapse; font-size: 0.72rem; }
+[data-card-module="paises"] .pa-table thead th {
+    text-align: left; padding: 5px 8px; color: var(--text-dim); font-weight: 500;
+    text-transform: uppercase; font-size: 0.6rem; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border); position: sticky; top: 0; background: var(--card);
+}
+[data-card-module="paises"] .pa-table tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.03); transition: background 0.2s;
+}
+[data-card-module="paises"] .pa-table tbody tr:hover { background: rgba(200,169,81,0.04); }
+[data-card-module="paises"] .pa-table td {
+    padding: 4px 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.68rem;
+}
+[data-card-module="paises"] .pa-pos {
+    font-weight: 700; font-family: 'JetBrains Mono', monospace;
+}
+[data-card-module="paises"] .pa-pos-1 { color: var(--gold); }
+[data-card-module="paises"] .pa-pos-n { color: var(--text-dim); }
+[data-card-module="paises"] .pa-pet { color: var(--gold); font-weight: 600; }
+[data-card-module="paises"] .pa-pct { color: var(--text-dim); }

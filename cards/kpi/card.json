@@ -1,0 +1,8 @@
+{
+    "slug": "kpi",
+    "nombre": "KPI",
+    "descripcion": "Indicador con valor, etiqueta y subtexto",
+    "color": "#C8A951",
+    "default_size": {"w": 15, "h": 7},
+    "categoria": "metricas"
+}

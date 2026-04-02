@@ -1,0 +1,3 @@
+[data-card-module="grafico_hora"] .card-body { padding: 8px; }
+[data-card-module="grafico_hora"] .chart-container { position: relative; width: 100%; height: 100%; }
+[data-card-module="grafico_hora"] canvas { width: 100%; height: 100%; }

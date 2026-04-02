@@ -1,0 +1,8 @@
+{
+    "slug": "grafico_tipo",
+    "nombre": "Tipo de Ataque",
+    "descripcion": "Distribucion por tipo de ataque",
+    "color": "#E74C3C",
+    "default_size": {"w": 20, "h": 14},
+    "categoria": "graficos"
+}

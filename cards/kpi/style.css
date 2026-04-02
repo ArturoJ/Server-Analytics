@@ -1,0 +1,41 @@
+[data-card-module="kpi"] .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-left: 3px solid var(--gold);
+    position: relative;
+}
+[data-card-module="kpi"] .kpi-icon {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-size: 1.4rem;
+    opacity: 0.12;
+}
+[data-card-module="kpi"] .kpi-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+[data-card-module="kpi"] .kpi-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1.1;
+}
+[data-card-module="kpi"] .kpi-value.white {
+    color: var(--text-bright);
+}
+[data-card-module="kpi"] .kpi-value.small {
+    font-size: 1rem;
+}
+[data-card-module="kpi"] .kpi-sub {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+}

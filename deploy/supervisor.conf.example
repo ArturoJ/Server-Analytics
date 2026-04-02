@@ -1,0 +1,19 @@
+[program:serveranalytics]
+command=/ruta/a/tu/proyecto/venv/bin/gunicorn server_analytics.wsgi:application --bind 127.0.0.1:9000 --workers 1
+directory=/ruta/a/tu/proyecto
+user=TU-USUARIO
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/serveranalytics.log
+stderr_logfile=/var/log/supervisor/serveranalytics_err.log
+environment=DJANGO_SETTINGS_MODULE="server_analytics.settings"
+
+[program:analizar_logs]
+command=/ruta/a/tu/proyecto/venv/bin/python manage.py analizar_logs --daemon --bloquear
+directory=/ruta/a/tu/proyecto
+user=root
+autostart=true
+autorestart=true
+stdout_logfile=/var/log/supervisor/analizar_logs.log
+stderr_logfile=/var/log/supervisor/analizar_logs_err.log
+environment=DJANGO_SETTINGS_MODULE="server_analytics.settings",PYTHONUNBUFFERED="1"

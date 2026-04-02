@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Servidores{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h1>Servidores</h1><p>Servidores monitorizados · {{ servidores|length }} registrado{{ servidores|length|pluralize:"s" }}</p></div>
+</div>
+
+<div class="grid-3">
+  {% for s in servidores %}
+  <div class="card {% if s.estado == 'activo' %}server-card-active{% elif s.estado == 'mantenimiento' %}server-card-maintenance{% else %}server-card-inactive{% endif %}">
+    <div class="server-header">
+      <span class="server-name">{{ s.nombre }}</span>
+      <span class="tag {% if s.estado == 'activo' %}tag-green{% elif s.estado == 'mantenimiento' %}tag-gold{% else %}tag-red{% endif %}">
+        <span class="status-dot {% if s.estado == 'activo' %}active{% elif s.estado == 'mantenimiento' %}maintenance{% else %}inactive{% endif %}"></span>{{ s.get_estado_display }}
+      </span>
+    </div>
+    <table class="server-table">
+      <tbody>
+        <tr><td>IP</td><td class="ip">{{ s.ip }}</td></tr>
+        <tr><td>Sistema</td><td>{{ s.sistema_operativo|default:"—" }}</td></tr>
+        <tr><td>Bloqueos hoy</td><td class="td-gold">{{ s.bloqueos_hoy }}</td></tr>
+        <tr><td>Última actividad</td><td class="td-date">{% if s.ultima_actividad %}{{ s.ultima_actividad|date:"d/m/Y H:i" }}{% else %}—{% endif %}</td></tr>
+        <tr><td>Alta</td><td class="td-date">{{ s.fecha_alta|date:"d/m/Y" }}</td></tr>
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

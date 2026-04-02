@@ -1,0 +1,8 @@
+{
+    "slug": "tabla_bloqueos",
+    "nombre": "Ultimos Bloqueos",
+    "descripcion": "Tabla filtrable de bloqueos recientes",
+    "color": "#45CB85",
+    "default_size": {"w": 60, "h": 18},
+    "categoria": "tablas"
+}

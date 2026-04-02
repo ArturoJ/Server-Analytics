@@ -1,0 +1,8 @@
+{
+    "slug": "reglas",
+    "nombre": "Reglas",
+    "descripcion": "Reglas de deteccion activas y sus estadisticas",
+    "color": "#a855f7",
+    "default_size": {"w": 30, "h": 14},
+    "categoria": "tablas"
+}

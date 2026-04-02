@@ -1,0 +1,3 @@
+[data-card-module="grafico_tipo"] .card-body { padding: 8px; }
+[data-card-module="grafico_tipo"] .chart-container { position: relative; width: 100%; height: 100%; }
+[data-card-module="grafico_tipo"] canvas { width: 100%; height: 100%; }

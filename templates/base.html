@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Analytics — {% block title %}Dashboard{% endblock %}</title>
+<meta name="description" content="Plataforma de monitorización de seguridad en tiempo real. Detección de escaneos, bloqueo automático de IPs, geolocalización de ataques y métricas de servidor. Panel de administración Django.">
+<meta name="keywords" content="server analytics, monitorización, seguridad, firewall, bloqueo IPs, django admin, panel de control, servidor, ciberseguridad">
+<meta name="author" content="{{ SITE_AUTHOR }}">
+<meta property="og:title" content="Server Analytics — Monitorización de Seguridad">
+<meta property="og:description" content="Dashboard de seguridad en tiempo real. Detección automática de ataques, bloqueo de IPs y estadísticas por país.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ SITE_DOMAIN }}/">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="{{ SITE_DOMAIN }}/">
+<link rel="manifest" href="{% static 'manifest.json' %}">
+<meta name="theme-color" content="#161d31">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Server Analytics">
+<link rel="apple-touch-icon" href="{% static 'icon-192.png' %}">
+<link rel="icon" type="image/svg+xml" href="{% static 'icon.svg' %}">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand"><h2>Server Analytics</h2><p>Monitorización de seguridad</p></div>
+  <ul class="sidebar-nav">
+    <li class="sidebar-section">Principal</li>
+    <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><span class="nav-icon">◉</span> Dashboard</a></li>
+    <li><a href="{% url 'bloqueos' %}" class="{% if request.resolver_match.url_name == 'bloqueos' %}active{% endif %}"><span class="nav-icon">⊘</span> Bloqueos</a></li>
+    <li class="sidebar-section">Análisis</li>
+    <li><a href="{% url 'estadisticas_paises' %}" class="{% if request.resolver_match.url_name == 'estadisticas_paises' %}active{% endif %}"><span class="nav-icon">◎</span> Estadísticas</a></li>
+    <li class="sidebar-section">Configuración</li>
+    <li><a href="{% url 'servidores' %}" class="{% if request.resolver_match.url_name == 'servidores' %}active{% endif %}"><span class="nav-icon">▣</span> Servidores</a></li>
+    <li><a href="{% url 'reglas' %}" class="{% if request.resolver_match.url_name == 'reglas' %}active{% endif %}"><span class="nav-icon">⚙</span> Reglas</a></li>
+  </ul>
+  <div class="sidebar-mobile-extra">
+    <div class="sidebar-mobile-info">
+      <span class="topbar-clock" id="clockMobile">--:--:--</span>
+      <span class="topbar-date" id="dateStrMobile">--</span>
+      <span class="topbar-status"><span class="dot"></span> Sistema activo</span>
+    </div>
+    <div class="sidebar-mobile-search">
+      <input type="text" id="searchIpMobile" placeholder="Buscar IP..." autocomplete="off">
+      <button id="btnSearchIpMobile">Buscar</button>
+    </div>
+    <div class="sidebar-sep"></div>
+    <button class="pwa-install-btn" id="pwaInstall">Instalar App</button>
+  </div>
+</nav>
+
+<div class="topbar">
+  <button class="menu-toggle" id="menuToggle">&#9776;</button>
+  <div class="topbar-left">
+    <span class="topbar-clock" id="clock">--:--:--</span>
+    <span class="topbar-date" id="dateStr">--</span>
+    <span class="topbar-status"><span class="dot"></span> Sistema activo</span>
+  </div>
+  <div class="topbar-search">
+    <input type="text" id="searchIp" placeholder="Buscar IP..." autocomplete="off">
+    <button id="btnSearchIp">Buscar</button>
+  </div>
+</div>
+
+<main class="main">
+  {% block content %}{% endblock %}
+
+  <footer class="footer">
+    Hecho con <span class="heart">♥</span> por {% if SITE_AUTHOR_URL %}<a href="{{ SITE_AUTHOR_URL }}" target="_blank">{{ SITE_AUTHOR }}</a>{% else %}{{ SITE_AUTHOR }}{% endif %}
+  </footer>
+</main>
+
+<script nonce="{{CSP_NONCE}}">
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js')}
+var _deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();_deferredPrompt=e;
+  document.getElementById('pwaInstall').classList.add('visible');
+});
+document.getElementById('pwaInstall').addEventListener('click',function(){
+  if(!_deferredPrompt)return;
+  _deferredPrompt.prompt();
+  _deferredPrompt.userChoice.then(function(){_deferredPrompt=null;document.getElementById('pwaInstall').classList.remove('visible')});
+});
+function updateClock(){
+  var d=new Date();
+  var t=d.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  var f=d.toLocaleDateString('es-ES',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('clock').textContent=t;
+  document.getElementById('dateStr').textContent=f;
+  var cm=document.getElementById('clockMobile');if(cm)cm.textContent=t;
+  var dm=document.getElementById('dateStrMobile');if(dm)dm.textContent=f;
+}
+updateClock();setInterval(updateClock,1000);
+function buscarIp(v){var ip=v.trim();if(ip)window.location.href='/bloqueos/'+ip+'/'}
+document.getElementById('searchIp').addEventListener('keydown',function(e){if(e.key==='Enter')buscarIp(this.value)});
+document.getElementById('btnSearchIp').addEventListener('click',function(){buscarIp(document.getElementById('searchIp').value)});
+document.getElementById('searchIpMobile').addEventListener('keydown',function(e){if(e.key==='Enter')buscarIp(this.value)});
+document.getElementById('btnSearchIpMobile').addEventListener('click',function(){buscarIp(document.getElementById('searchIpMobile').value)});
+var sb=document.getElementById('sidebar'),ov=document.getElementById('sidebarOverlay'),mt=document.getElementById('menuToggle');
+mt.addEventListener('click',function(){sb.classList.toggle('open');ov.classList.toggle('open')});
+ov.addEventListener('click',function(){sb.classList.remove('open');ov.classList.remove('open')});
+sb.querySelectorAll('a').forEach(function(a){a.addEventListener('click',function(){sb.classList.remove('open');ov.classList.remove('open')})});
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

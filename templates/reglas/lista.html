@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% block title %}Reglas de Detección{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h1>Reglas de Detección</h1><p>Patrones que definen qué tráfico se considera sospechoso y cuándo bloquear</p></div>
+</div>
+
+<div class="grid-4">
+  <div class="card card-kpi"><div class="card-label">Total Reglas</div><div class="card-value gold">{{ total_reglas }}</div><div class="card-sub">{{ activas }} activa{{ activas|pluralize:"s" }} · {{ inactivas }} inactiva{{ inactivas|pluralize:"s" }}</div></div>
+  <div class="card card-kpi"><div class="card-label">Disparos (24h)</div><div class="card-value">{{ total_disparos }}</div><div class="card-sub">hoy</div></div>
+  <div class="card card-kpi"><div class="card-label">Regla Más Activa</div><div class="card-value card-value-mono-sm">{% if regla_top %}{{ regla_top.nombre }}{% else %}—{% endif %}</div><div class="card-sub">{{ regla_top_disparos }} disparos hoy</div></div>
+  <div class="card card-kpi"><div class="card-label">IPs Bloqueadas</div><div class="card-value gold">{{ total_ips_bloqueadas }}</div><div class="card-sub">por todas las reglas</div></div>
+</div>
+
+<div class="grid-2 section">
+  <div class="chart-box"><h3>Disparos por Regla (24h)</h3><div class="chart-wrap"><canvas id="chartReglas"></canvas></div></div>
+  <div class="chart-box"><h3>Disparos por Hora</h3><div class="chart-wrap"><canvas id="chartHoraRegla"></canvas></div></div>
+</div>
+
+<div class="section">
+  <div class="rule-section-title"><span class="rule-section-bar"></span> Reglas Configuradas</div>
+  <div class="grid-2">
+    {% for r in reglas %}
+    <div class="rule-card {% if not r.activa %}inactive{% endif %}">
+      <div class="rule-header">
+        <span class="rule-name">{{ r.nombre }}</span>
+        <div class="rule-header-tags">
+          <span class="tag {% if r.tipo == 'escaneo' %}tag-gold{% elif r.tipo == 'exceso' %}tag-red{% elif r.tipo == 'fuerza_bruta' %}tag-purple{% else %}tag-blue{% endif %}">{{ r.get_tipo_display }}</span>
+          <span class="tag {% if r.activa %}tag-green{% else %}tag-red{% endif %}">{% if r.activa %}Activa{% else %}Inactiva{% endif %}</span>
+        </div>
+      </div>
+      {% if r.descripcion %}<div class="rule-desc">{{ r.descripcion }}</div>{% endif %}
+      <div class="rule-pattern">{{ r.patron }}</div>
+      <div class="rule-body">
+        <div><div class="rule-field-label">Umbral</div><div class="rule-field-value-gold">{{ r.umbral_peticiones }} peticiones</div></div>
+        <div><div class="rule-field-label">Ventana</div><div class="rule-field-value">{{ r.ventana_minutos }} minuto{{ r.ventana_minutos|pluralize:"s" }}</div></div>
+      </div>
+      <div class="rule-stats">
+        <div class="rule-stat"><div class="rule-stat-value">{{ r.disparos_hoy }}</div><div class="rule-stat-label">Disparos 24h</div></div>
+        <div class="rule-stat"><div class="rule-stat-value">{{ r.ips_hoy }}</div><div class="rule-stat-label">IPs bloqueadas</div></div>
+        <div class="rule-stat"><div class="rule-stat-value">{{ r.peticiones_hoy }}</div><div class="rule-stat-label">Peticiones paradas</div></div>
+        <div class="rule-stat"><div class="rule-stat-value">{% if r.ultimo_disparo %}{{ r.ultimo_disparo|date:"d/m H:i" }}{% else %}—{% endif %}</div><div class="rule-stat-label">Último disparo</div></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% load l10n %}
+{% block extra_js %}
+<script nonce="{{CSP_NONCE}}" src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js" integrity="sha384-vsrfeLOOY6KuIYKDlmVH5UiBmgIdB1oEf7p01YgWHuqmOHfZr374+odEv96n9tNC" crossorigin="anonymous"></script>
+<script nonce="{{CSP_NONCE}}">
+Chart.defaults.color='#8892a4';Chart.defaults.font.family="'JetBrains Mono',monospace";Chart.defaults.font.size=11;
+
+var reglaNames = [{% for r in reglas %}'{{ r.nombre }}'{% if not forloop.last %},{% endif %}{% endfor %}];
+var reglaDisparos = [{% for r in reglas %}{{ r.disparos_hoy|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}];
+var reglaIps = [{% for r in reglas %}{{ r.ips_hoy|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}];
+var COLORS = ['#C8A951','#E74C3C','#a855f7','#299cdb'];
+
+new Chart(document.getElementById('chartReglas'),{type:'bar',data:{labels:reglaNames,datasets:[{label:'Disparos',data:reglaDisparos,backgroundColor:COLORS,borderRadius:6,borderSkipped:false},{label:'IPs bloqueadas',data:reglaIps,backgroundColor:COLORS.map(function(c){return c+'33'}),borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{y:{grid:{color:'rgba(255,255,255,.04)'}},x:{grid:{display:false},ticks:{font:{size:9}}}}}});
+
+fetch('/api/dashboard/').then(r=>r.json()).then(function(data){
+  var labels = data.por_hora.map(function(h){return h.hora+':00'});
+  var valores = data.por_hora.map(function(h){return h.total});
+  new Chart(document.getElementById('chartHoraRegla'),{type:'line',data:{labels:labels,datasets:[{label:'Todos',data:valores,borderColor:'#C8A951',backgroundColor:'rgba(200,169,81,.1)',fill:true,tension:.3,pointRadius:3,pointBackgroundColor:'#C8A951'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{padding:14,usePointStyle:true}}},scales:{y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{stepSize:1}},x:{grid:{display:false}}}}});
+});
+</script>
+{% endblock %}

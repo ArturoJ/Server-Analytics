@@ -1,0 +1,3 @@
+[data-card-module="top_ips"] .card-body { padding: 8px; }
+[data-card-module="top_ips"] .chart-container { position: relative; width: 100%; height: 100%; }
+[data-card-module="top_ips"] canvas { width: 100%; height: 100%; }

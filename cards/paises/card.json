@@ -1,0 +1,8 @@
+{
+    "slug": "paises",
+    "nombre": "Paises",
+    "descripcion": "Ranking de paises por ataques",
+    "color": "#299cdb",
+    "default_size": {"w": 30, "h": 16},
+    "categoria": "tablas"
+}

@@ -1,0 +1,8 @@
+{
+    "slug": "top_ips",
+    "nombre": "Top 5 IPs",
+    "descripcion": "IPs con mas peticiones bloqueadas",
+    "color": "#FFD700",
+    "default_size": {"w": 20, "h": 14},
+    "categoria": "graficos"
+}

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}IP {{ ip }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1>Detalle de IP: <span class="header-ip">{{ ip }}</span></h1>
+    <p>{% if bloqueos %}{{ bloqueos.0.pais }} · {{ bloqueos.count }} bloqueo{{ bloqueos.count|pluralize:"s" }} · Estado: {% if bloqueos.0.activo %}Bloqueada{% else %}Desbloqueada{% endif %}{% else %}Sin registros{% endif %}</p>
+  </div>
+  <a href="{% url 'bloqueos' %}" class="btn">← Volver a bloqueos</a>
+</div>
+
+{% if bloqueos %}
+<div class="grid-4">
+  <div class="card card-kpi"><div class="card-label">Total Peticiones</div><div class="card-value gold">{{ bloqueos.0.peticiones }}</div><div class="card-sub">en {{ bloqueos.count }} bloqueo{{ bloqueos.count|pluralize:"s" }}</div></div>
+  <div class="card card-kpi"><div class="card-label">País</div><div class="card-value card-value-sm">{{ bloqueos.0.pais }}</div><div class="card-sub">{{ bloqueos.0.codigo_pais }}</div></div>
+  <div class="card card-kpi"><div class="card-label">Motivo</div><div class="card-value card-value-xs"><span class="tag {% if bloqueos.0.motivo == 'exceso' %}tag-red{% else %}tag-gold{% endif %}">{{ bloqueos.0.get_motivo_display }}</span></div><div class="card-sub">{% if bloqueos.0.regla %}Regla: {{ bloqueos.0.regla.nombre }}{% endif %}</div></div>
+  <div class="card card-kpi"><div class="card-label">Estado</div><div class="card-value {% if bloqueos.0.activo %}card-value-status{% else %}card-value-status-off{% endif %}">{% if bloqueos.0.activo %}● Bloqueada{% else %}○ Desbloqueada{% endif %}</div><div class="card-sub">Desde {{ bloqueos.0.fecha_bloqueo|date:"d/m H:i" }}</div></div>
+</div>
+
+<div class="table-box section">
+  <h3>Timeline de Bloqueos</h3>
+  <table>
+    <thead><tr><th>Fecha</th><th>Hora</th><th>Servidor</th><th>Motivo</th><th>Peticiones</th><th>Regla</th></tr></thead>
+    <tbody>
+      {% for b in bloqueos %}
+      <tr>
+        <td class="td-date">{{ b.fecha_bloqueo|date:"d/m/Y" }}</td>
+        <td class="td-time">{{ b.fecha_bloqueo|date:"H:i" }}</td>
+        <td>{{ b.servidor.nombre }}</td>
+        <td><span class="tag {% if b.motivo == 'exceso' %}tag-red{% else %}tag-gold{% endif %}">{{ b.get_motivo_display }}</span></td>
+        <td><span class="tag {% if b.peticiones >= 50 %}tag-red{% elif b.peticiones >= 25 %}tag-gold{% endif %}">{{ b.peticiones }}</span></td>
+        <td class="td-regla">{% if b.regla %}{{ b.regla.nombre }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% for b in bloqueos %}
+{% if b.rutas %}
+<div class="table-box section">
+  <h3>Rutas solicitadas ({{ b.fecha_bloqueo|date:"d/m H:i" }}) — {{ b.rutas|length }} ruta{{ b.rutas|length|pluralize:"s" }}</h3>
+  <div class="table-scroll">
+    {% for ruta in b.rutas %}
+    <div class="rule-pattern">{{ ruta }}</div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endif %}
+{% endfor %}
+
+{% else %}
+<div class="card section"><p class="empty-state">No se encontraron bloqueos para esta IP.</p></div>
+{% endif %}
+{% endblock %}

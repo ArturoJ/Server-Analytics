@@ -1,0 +1,8 @@
+{
+    "slug": "grafico_hora",
+    "nombre": "Ataques por Hora",
+    "descripcion": "Distribucion horaria de bloqueos",
+    "color": "#C8A951",
+    "default_size": {"w": 20, "h": 14},
+    "categoria": "graficos"
+}
