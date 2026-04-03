@@ -249,7 +249,7 @@ class Command(BaseCommand):
                         hits_por_regla[rc['regla'].pk][(ip, rc['regla'].pk)] += 1
                         detected = True
                 elif rc['tipo'] == 'exceso':
-                    if not RUTAS_IGNORADAS.match(ruta):
+                    if not RUTAS_IGNORADAS.match(ruta) and any(p.search(ruta) for p in rc['patrones']):
                         hits_por_regla[rc['regla'].pk][(ip, rc['regla'].pk)] += 1
                         detected = True
                 elif rc['tipo'] == 'fuerza_bruta':
