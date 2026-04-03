@@ -88,22 +88,22 @@ Pasos:
 Despues de instalar, crea las 7 reglas de deteccion desde el servidor:
 
 ```bash
-cd /ruta/al/proyecto && venv/bin/python manage.py shell -c "from monitor.models import ReglaDeteccion; ReglaDeteccion.objects.get_or_create(nombre='scan_vuln_01', defaults={'patron': '/wp-admin|/phpmyadmin|/.env|/xmlrpc', 'tipo': 'escaneo', 'umbral_peticiones': 5, 'ventana_minutos': 5, 'descripcion': 'Detecta peticiones a rutas tipicas de exploits'}); ReglaDeteccion.objects.get_or_create(nombre='excess_req_01', defaults={'patron': '.*', 'tipo': 'exceso', 'umbral_peticiones': 50, 'ventana_minutos': 1, 'descripcion': 'Exceso de peticiones en poco tiempo'}); ReglaDeteccion.objects.get_or_create(nombre='brute_force_01', defaults={'patron': '/login|/admin|/api/auth', 'tipo': 'fuerza_bruta', 'umbral_peticiones': 10, 'ventana_minutos': 2, 'descripcion': 'Intentos de fuerza bruta contra login'}); ReglaDeteccion.objects.get_or_create(nombre='spam_contacto_01', defaults={'patron': '/contacto|/contact|/kontakt', 'tipo': 'exceso', 'umbral_peticiones': 5, 'ventana_minutos': 3, 'descripcion': 'Bots que spamean formularios de contacto'}); ReglaDeteccion.objects.get_or_create(nombre='scan_wordpress_01', defaults={'patron': '/wp-content|/wp-includes|/wp-login|/wordpress|/wp/', 'tipo': 'escaneo', 'umbral_peticiones': 3, 'ventana_minutos': 5, 'descripcion': 'Escaneo de rutas WordPress'}); ReglaDeteccion.objects.get_or_create(nombre='scan_dirs_01', defaults={'patron': '/backup|/old|/new|/blog|/test|/dev|/staging', 'tipo': 'escaneo', 'umbral_peticiones': 3, 'ventana_minutos': 5, 'descripcion': 'Escaneo de directorios comunes'}); ReglaDeteccion.objects.get_or_create(nombre='scan_config_01', defaults={'patron': '/.vscode|/.git|/@vite|/v2/_catalog|/swagger|/api-docs|/SDK|/.well-known/security', 'tipo': 'escaneo', 'umbral_peticiones': 2, 'ventana_minutos': 5, 'descripcion': 'Escaneo de archivos de configuracion y APIs expuestas'}); print('Reglas:', ReglaDeteccion.objects.count())"
+cd /ruta/al/proyecto && venv/bin/python manage.py shell -c "from monitor.models import ReglaDeteccion; ReglaDeteccion.objects.get_or_create(nombre='scan_vuln_01', defaults={'patron': '/wp-admin|/phpmyadmin|/.env|/xmlrpc', 'tipo': 'escaneo', 'umbral_peticiones': 5, 'ventana_minutos': 5, 'descripcion': 'Detecta peticiones a rutas tipicas de exploits'}); ReglaDeteccion.objects.get_or_create(nombre='excess_req_01', defaults={'patron': '.*', 'tipo': 'exceso', 'umbral_peticiones': 50, 'ventana_minutos': 1, 'descripcion': 'Exceso de peticiones en poco tiempo'}); ReglaDeteccion.objects.get_or_create(nombre='brute_force_01', defaults={'patron': '/login|/admin|/api/auth', 'tipo': 'fuerza_bruta', 'umbral_peticiones': 10, 'ventana_minutos': 2, 'descripcion': 'Intentos de fuerza bruta contra login'}); ReglaDeteccion.objects.get_or_create(nombre='spam_contacto_01', defaults={'patron': '/contacto|/contact|/kontakt', 'tipo': 'exceso', 'metodo': 'POST', 'umbral_peticiones': 2, 'ventana_minutos': 1, 'descripcion': 'Bots que spamean formularios de contacto (solo POST)'}); ReglaDeteccion.objects.get_or_create(nombre='scan_wordpress_01', defaults={'patron': '/wp-content|/wp-includes|/wp-login|/wordpress|/wp/', 'tipo': 'escaneo', 'umbral_peticiones': 3, 'ventana_minutos': 5, 'descripcion': 'Escaneo de rutas WordPress'}); ReglaDeteccion.objects.get_or_create(nombre='scan_dirs_01', defaults={'patron': '/backup|/old|/new|/blog|/test|/dev|/staging', 'tipo': 'escaneo', 'umbral_peticiones': 3, 'ventana_minutos': 5, 'descripcion': 'Escaneo de directorios comunes'}); ReglaDeteccion.objects.get_or_create(nombre='scan_config_01', defaults={'patron': '/.vscode|/.git|/@vite|/v2/_catalog|/swagger|/api-docs|/SDK|/.well-known/security', 'tipo': 'escaneo', 'umbral_peticiones': 2, 'ventana_minutos': 5, 'descripcion': 'Escaneo de archivos de configuracion y APIs expuestas'}); print('Reglas:', ReglaDeteccion.objects.count())"
 ```
 
 Las 7 reglas:
 
-| Regla | Tipo | Umbral | Ventana | Detecta |
-|-------|------|--------|---------|---------|
-| scan_vuln_01 | Escaneo | 5 hits | 5 min | /wp-admin, /phpmyadmin, /.env, /xmlrpc |
-| excess_req_01 | Exceso | 50 hits | 1 min | Cualquier ruta |
-| brute_force_01 | Fuerza bruta | 10 hits | 2 min | /login, /admin, /api/auth |
-| spam_contacto_01 | Exceso | 5 hits | 3 min | /contacto, /contact, /kontakt |
-| scan_wordpress_01 | Escaneo | 3 hits | 5 min | /wp-content, /wp-includes, /wp-login |
-| scan_dirs_01 | Escaneo | 3 hits | 5 min | /backup, /old, /new, /blog, /test |
-| scan_config_01 | Escaneo | 2 hits | 5 min | /.vscode, /.git, /swagger, /api-docs |
+| Regla | Tipo | Metodo | Umbral | Ventana | Detecta |
+|-------|------|--------|--------|---------|---------|
+| scan_vuln_01 | Escaneo | Cualquiera | 5 hits | 5 min | /wp-admin, /phpmyadmin, /.env, /xmlrpc |
+| excess_req_01 | Exceso | Cualquiera | 50 hits | 1 min | Cualquier ruta |
+| brute_force_01 | Fuerza bruta | Cualquiera | 10 hits | 2 min | /login, /admin, /api/auth |
+| spam_contacto_01 | Exceso | POST | 2 hits | 1 min | /contacto, /contact, /kontakt |
+| scan_wordpress_01 | Escaneo | Cualquiera | 3 hits | 5 min | /wp-content, /wp-includes, /wp-login |
+| scan_dirs_01 | Escaneo | Cualquiera | 3 hits | 5 min | /backup, /old, /new, /blog, /test |
+| scan_config_01 | Escaneo | Cualquiera | 2 hits | 5 min | /.vscode, /.git, /swagger, /api-docs |
 
-Puedes crear tus propias reglas con patrones regex personalizados.
+Las reglas soportan filtro por metodo HTTP (GET, POST, PUT, DELETE o cualquiera). Puedes crear tus propias reglas con patrones regex personalizados.
 
 ## Como funciona
 

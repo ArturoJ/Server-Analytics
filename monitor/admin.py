@@ -20,8 +20,8 @@ class BloqueoAdmin(admin.ModelAdmin):
 
 @admin.register(ReglaDeteccion)
 class ReglaDeteccionAdmin(admin.ModelAdmin):
-    list_display = ['nombre', 'tipo', 'umbral_peticiones', 'ventana_minutos', 'activa']
-    list_filter = ['tipo', 'activa']
+    list_display = ['nombre', 'tipo', 'metodo', 'umbral_peticiones', 'ventana_minutos', 'activa']
+    list_filter = ['tipo', 'activa', 'metodo']
 
 
 @admin.register(MetricaDiaria)

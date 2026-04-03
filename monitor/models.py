@@ -58,10 +58,20 @@ class ReglaDeteccion(models.Model):
     El campo 'patron' contiene expresiones regulares separadas por '|'.
     Cuando una IP supera 'umbral_peticiones' en 'ventana_minutos',
     se crea un Bloqueo automaticamente.
+    Si 'metodo' esta definido, solo cuenta peticiones con ese metodo HTTP.
     """
+    METODOS_HTTP = (
+        ('', 'Cualquiera'),
+        ('GET', 'GET'),
+        ('POST', 'POST'),
+        ('PUT', 'PUT'),
+        ('DELETE', 'DELETE'),
+    )
+
     nombre = models.CharField(max_length=100)
     patron = models.TextField()
     tipo = models.CharField(max_length=20, choices=TIPOS_REGLA)
+    metodo = models.CharField(max_length=10, choices=METODOS_HTTP, blank=True, default='')
     umbral_peticiones = models.IntegerField(default=10)
     ventana_minutos = models.IntegerField(default=5)
     activa = models.BooleanField(default=True)

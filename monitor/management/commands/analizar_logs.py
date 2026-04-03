@@ -128,6 +128,7 @@ class Command(BaseCommand):
                 'umbral': regla.umbral_peticiones,
                 'ventana': regla.ventana_minutos,
                 'tipo': regla.tipo,
+                'metodo': regla.metodo,
             })
 
         self.stdout.write(f'Servidor: {servidor.nombre}')
@@ -227,6 +228,7 @@ class Command(BaseCommand):
             ip = match.group('ip')
             codigo = int(match.group('codigo'))
             ruta = match.group('ruta')
+            metodo = match.group('metodo')
 
             # Conteo de visitantes: IPs unicas con peticiones exitosas a paginas reales
             if ip not in whitelist and codigo in (200, 301, 302) and not RUTAS_IGNORADAS.match(ruta):
@@ -237,6 +239,10 @@ class Command(BaseCommand):
 
             # Deteccion de ataques segun reglas activas
             for rc in reglas:
+                # Si la regla filtra por metodo HTTP, saltar si no coincide
+                if rc['metodo'] and rc['metodo'] != metodo:
+                    continue
+
                 detected = False
                 if rc['tipo'] == 'escaneo':
                     if any(p.search(ruta) for p in rc['patrones']):
