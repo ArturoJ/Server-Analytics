@@ -4,6 +4,22 @@ Plataforma de monitorizacion de seguridad en tiempo real. Detecta ataques a serv
 
 Dashboard modular con widgets personalizables (drag-and-drop), estadisticas por pais, reglas de deteccion configurables y PWA instalable.
 
+![Dashboard](docs/dashboard.png)
+
+## Demo
+
+![Demo](docs/demo.gif)
+
+## Capturas
+
+| Dashboard | Registro de Bloqueos |
+|-----------|---------------------|
+| ![Dashboard](docs/dashboard.png) | ![Bloqueos](docs/bloqueos.png) |
+
+| Estadisticas por Pais | Reglas de Deteccion |
+|-----------------------|---------------------|
+| ![Estadisticas](docs/estadisticas.png) | ![Reglas](docs/reglas.png) |
+
 ## Requisitos
 
 - Ubuntu 24.04 LTS
